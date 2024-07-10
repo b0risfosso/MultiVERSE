@@ -55,13 +55,10 @@
 ## We clean the workspace
 rm(list=ls());cat('\014');if(length(dev.list()>0)){dev.off()}
 
+options(vsize = 64000)
+
 setwd("./RWR/")
 
-print(memory.limit())
-
-# Increase memory limit to 32 GB (Windows)
-memory.limit(size = 32000)
-print(memory.limit())
 ## We load the R file containing the associated RWR functions.
 source("Functions_RWRMH.R")
 
