@@ -1,0 +1,18 @@
+2024-07-09 22:04:20.065886: 
+                EMBED_DIMENSION: 128 
+                CLOSEST_NODES: 300  
+                NUM_STEPS_1: 1000000  
+                NUM_SAMPLED: 10  
+                LEARNING_RATE: 0.01  
+                CHUNK_SIZE: 100  
+                NB_CHUNK: 1  
+                train_frac: 0.7 
+                solver: lbfgs 
+                max_iter: 1000  
+                split_alg: random  
+                
+Overall MULTIVERSE AUC hadamard: 0.0
+Overall MULTIVERSE AUC weighted_l1: 0.0
+Overall MULTIVERSE AUC weighted_l2: 0.0
+Overall MULTIVERSE AUC average: 0.0
+Overall MULTIVERSE AUC cosine: 0.5
