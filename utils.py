@@ -50,7 +50,7 @@ def update(W_u, W_v, D, learning_rate, bias):
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
 
-@njit(parallel=True)
+@njit
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
     nb_nodes = np.int64(np.shape(nodes)[0])
     # NCE biases
