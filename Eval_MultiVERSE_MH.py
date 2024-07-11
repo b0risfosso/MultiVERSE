@@ -49,7 +49,7 @@ def main(args=None):
     KL = False
     NB_CHUNK = np.int64(1)
     CHUNK_SIZE = np.int64(100)
-    NUM_STEPS_1 = np.int64(100*10**6/CHUNK_SIZE)
+    NUM_STEPS_1 = np.int64(100*10**5/CHUNK_SIZE)
     
     # If toy example
     #EMBED_DIMENSION = 128
@@ -187,13 +187,7 @@ def main(args=None):
     X = dict(zip(range(embeddings.shape[0]), embeddings))
     
     # Create X with incremented indices
-    X = {str(int(nodes[key-1])): X[key] for key in X}
-
-    X2 = dict(zip(range(1, embeddings.shape[0] + 1), embeddings))
-    X2 = {str(int(nodes[key - 1])): X2[key] for key in X2}
-
-    print(X)
-    print(X2)
+    X = {str(int(nodes[key])): X[key] for key in X}
 
     # Print the modified train/test split to verify changes
     print("Modified train/test split")
@@ -204,10 +198,6 @@ def main(args=None):
     print("Print X:")
     print(X)
     print("Done Print X:")
-
-
-    # Convert nodes to numpy array if not already
-    nodes = np.asarray(nodes)
 
     # Check for missing nodes
     missing_nodes = [str(node) for node in nodes if str(node) not in X]
