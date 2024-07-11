@@ -42,9 +42,15 @@ def node_negative (u, list_neighbours, CLOSEST_NODES):
     return int(list_neighbours[u][np.random.randint(np.size(list_neighbours[0])-CLOSEST_NODES,np.size(list_neighbours[0]))])
 
 @njit 
-def update (W_u, W_v, D, learning_rate, bias):
-    sim = sigmoid(np.dot(W_u,W_v)-bias)
-    gradient = (D - sim)*learning_rate
+def update(W_u, W_v, D, learning_rate, bias):
+    assert isinstance(W_u, np.ndarray), f"Expected np.ndarray for W_u, got {type(W_u)} with value {W_u}"
+    assert isinstance(W_v, np.ndarray), f"Expected np.ndarray for W_v, got {type(W_v)} with value {W_v}"
+    assert isinstance(D, (int, float)), f"Expected int or float for D, got {type(D)} with value {D}"
+    assert isinstance(learning_rate, (int, float)), f"Expected int or float for learning_rate, got {type(learning_rate)} with value {learning_rate}"
+    assert isinstance(bias, (int, float)), f"Expected int or float for bias, got {type(bias)} with value {bias}"
+    
+    sim = sigmoid(np.dot(W_u, W_v) - bias)
+    gradient = (D - sim) * learning_rate
     W_u = W_u + gradient * W_v
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
@@ -69,9 +75,7 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
                 v_neg = list_neighbours[u, v_neg_idx]
                 embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
         
-        if k % (NUM_STEPS // 10) == 0:
-            print("Progress step:", k, "/", NUM_STEPS)
-
+    print("finish train")
     return embeddings
 
 def knbrs(G, start, k):
