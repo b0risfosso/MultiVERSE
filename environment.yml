@@ -1,0 +1,20 @@
+name: env
+channels:
+  - conda-forge
+dependencies:
+  - python=3
+  - rpy2
+  - gensim
+  - networkx=2.2
+  - numba=0.50.1
+  - scikit-learn=0.21.3
+  - pandas
+  - r-base>=3.6.1
+  - r-devtools
+  - r-igraph
+  - r-mclust
+  - r-kernlab
+  - r-r.matlab
+  - r-bc3net
+  - r-optparse
+  - r-tidyverse
