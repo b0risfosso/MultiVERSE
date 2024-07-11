@@ -160,6 +160,19 @@ def main(args=None):
     # Train and test during training
     neighborhood = np.asarray(neighborhood)
     nodes= np.asarray(nodes)
+
+    assert isinstance(neighborhood, np.ndarray), f"Expected np.ndarray for neighborhood, got {type(neighborhood)}"
+    assert isinstance(nodes, np.ndarray), f"Expected np.ndarray for nodes, got {type(nodes)}"
+    assert isinstance(list_neighbours, np.ndarray), f"Expected np.ndarray for list_neighbours, got {type(list_neighbours)}"
+    assert isinstance(NUM_STEPS_1, int), f"Expected int for NUM_STEPS, got {type(NUM_STEPS_1)}"
+    assert isinstance(NUM_SAMPLED, int), f"Expected int for NUM_SAMPLED, got {type(NUM_SAMPLED)}"
+    assert isinstance(LEARNING_RATE, (int, float)), f"Expected int or float for LEARNING_RATE, got {type(LEARNING_RATE)}"
+    assert isinstance(CLOSEST_NODES, int), f"Expected int for CLOSEST_NODES, got {type(CLOSEST_NODES)}"
+    assert isinstance(CHUNK_SIZE, int), f"Expected int for CHUNK_SIZE, got {type(CHUNK_SIZE)}"
+    assert isinstance(NB_CHUNK, int), f"Expected int for NB_CHUNK, got {type(NB_CHUNK)}"
+    assert isinstance(embeddings, np.ndarray), f"Expected np.ndarray for embeddings, got {type(embeddings)}"
+    assert isinstance(reverse_data_DistancematrixPPI, np.ndarray), f"Expected np.ndarray for reverse_data_DistancematrixPPI, got {type(reverse_data_DistancematrixPPI)}"
+
     
     embeddings = f.train(neighborhood, nodes, list_neighbours, NUM_STEPS_1, NUM_SAMPLED, LEARNING_RATE, \
                          CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI)
