@@ -203,6 +203,9 @@ def main(args=None):
 
     edge_emb = ['hadamard', 'weighted_l1', 'weighted_l2', 'average', 'cosine']
     results_embeddings_methods = dict()
+    print("Printing X")
+    print(X)
+    print("Done printing X, stupid")
 
     for i in range (len(edge_emb)):
         tmp_result_multiverse = nee.evaluate_ne(data_split=nee.traintest_split, X=X, method="Multiverse", edge_embed_method=edge_emb[i], label_binarizer=lp_model)
