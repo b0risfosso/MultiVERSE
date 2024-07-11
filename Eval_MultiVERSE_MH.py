@@ -183,8 +183,16 @@ def main(args=None):
 
 
     # Increment the indices by 1 for the embeddings
-    X = dict(zip(range(1, embeddings.shape[0] + 1), embeddings))
-    X = {str(int(nodes[key - 1])): X[key] for key in X}
+    X = dict(zip(range(embeddings.shape[0]), embeddings))
+    
+    # Create X with incremented indices
+    X = {str(int(nodes[key-1])): X[key] for key in X}
+
+    X2 = dict(zip(range(1, embeddings.shape[0] + 1), embeddings))
+    X2 = {str(int(nodes[key - 1])): X[key] for key in X}
+
+    print(X)
+    print(X2)
 
     # Print the modified train/test split to verify changes
     print("Modified train/test split")
