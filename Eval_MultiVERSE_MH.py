@@ -49,7 +49,7 @@ def main(args=None):
     KL = False
     NB_CHUNK = np.int64(1)
     CHUNK_SIZE = np.int64(100)
-    NUM_STEPS_1 = np.int64(100*10**4/CHUNK_SIZE)
+    NUM_STEPS_1 = np.int64(100*10**3/CHUNK_SIZE)
     
     # If toy example
     #EMBED_DIMENSION = 128
