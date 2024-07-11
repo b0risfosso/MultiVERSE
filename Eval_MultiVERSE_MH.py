@@ -207,6 +207,10 @@ def main(args=None):
     print(X)
     print("Done printing X, stupid")
 
+    print("printing train/test split")
+    print(nee.traintest_split)
+    print("done printing train/test split")
+
     for i in range (len(edge_emb)):
         tmp_result_multiverse = nee.evaluate_ne(data_split=nee.traintest_split, X=X, method="Multiverse", edge_embed_method=edge_emb[i], label_binarizer=lp_model)
         results_embeddings_methods[tmp_result_multiverse.method +'_'  + str(edge_emb[i])] = tmp_result_multiverse.get_all()[1][4]
