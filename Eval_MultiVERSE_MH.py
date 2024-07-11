@@ -163,6 +163,7 @@ def main(args=None):
     # Train and test during training
     neighborhood = np.asarray(neighborhood)
     nodes= np.asarray(nodes)
+    print(nodes)
 
     assert isinstance(neighborhood, np.ndarray), f"Expected np.ndarray for neighborhood, got {type(neighborhood)}"
     assert isinstance(nodes, np.ndarray), f"Expected np.ndarray for nodes, got {type(nodes)}"
