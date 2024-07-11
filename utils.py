@@ -15,7 +15,7 @@ from sklearn.preprocessing import normalize
 import pandas as pd
 import networkx as nx
 from evalne.utils import preprocess as pp
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 
 def rand_choice_nb(arr, prob):
@@ -51,18 +51,22 @@ def update(W_u, W_v, D, learning_rate, bias):
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
 
-def process_chunk(i, nodes_opt, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI, embeddings, NUM_SAMPLED, LEARNING_RATE, nce_bias, nce_bias_neg, nb_nodes):
-    u = nodes_opt[i]
-    v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
-    embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
-    for j in range(NUM_SAMPLED):
-        if nb_nodes - CLOSEST_NODES - 1 > 0:
-            v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
-        else:
-            v_neg_idx = np.random.randint(0, nb_nodes)
-        v_neg = list_neighbours[u, v_neg_idx]
-        embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
-    return u, v, v_neg, embeddings[u, :], embeddings[v, :], embeddings[v_neg, :]
+def process_step(k, nodes, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI, embeddings, NUM_SAMPLED, LEARNING_RATE, nce_bias, nce_bias_neg, nb_nodes, CHUNK_SIZE):
+    nodes_opt = np.random.randint(0, nb_nodes, CHUNK_SIZE)
+    for i in range(CHUNK_SIZE):
+        u = nodes_opt[i]
+        v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
+        embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
+        for j in range(NUM_SAMPLED):
+            if nb_nodes - CLOSEST_NODES - 1 > 0:
+                v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
+            else:
+                v_neg_idx = np.random.randint(0, nb_nodes)
+            v_neg = list_neighbours[u, v_neg_idx]
+            embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
+    if k % (NUM_STEPS // 10) == 0:
+        print(f"Progress step: {k} / {NUM_STEPS}")
+    return embeddings
 
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
     nb_nodes = np.int64(np.shape(nodes)[0])
@@ -70,21 +74,15 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
     nce_bias = np.float64(np.log(nb_nodes))
     nce_bias_neg = np.float64(np.log(nb_nodes / NUM_SAMPLED))
     
-    for k in range(NUM_STEPS):
-        if k % (NUM_STEPS // 10) == 0:
-            print(f"Progress step: {k} / {NUM_STEPS}")
-        
-        nodes_opt = np.random.randint(0, nb_nodes, CHUNK_SIZE)
-        with ThreadPoolExecutor() as executor:
-            futures = [executor.submit(process_chunk, i, nodes_opt, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI, embeddings, NUM_SAMPLED, LEARNING_RATE, nce_bias, nce_bias_neg, nb_nodes) for i in range(CHUNK_SIZE)]
-            results = [future.result() for future in futures]
-        
-        for res in results:
-            u, v, v_neg, emb_u, emb_v, emb_v_neg = res
-            embeddings[u, :], embeddings[v, :], embeddings[v_neg, :] = emb_u, emb_v, emb_v_neg
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(process_step, k, nodes, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI, embeddings, NUM_SAMPLED, LEARNING_RATE, nce_bias, nce_bias_neg, nb_nodes, CHUNK_SIZE) for k in range(NUM_STEPS)]
+        results = [future.result() for future in futures]
+    
+    # Consolidate results
+    final_embeddings = np.mean(results, axis=0)
     
     print("finish train")
-    return embeddings
+    return final_embeddings
 
 
 def knbrs(G, start, k):
