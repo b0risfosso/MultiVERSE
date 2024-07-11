@@ -43,11 +43,6 @@ def node_negative (u, list_neighbours, CLOSEST_NODES):
 
 @njit 
 def update(W_u, W_v, D, learning_rate, bias):
-    assert isinstance(W_u, np.ndarray), f"Expected np.ndarray for W_u, got {type(W_u)} with value {W_u}"
-    assert isinstance(W_v, np.ndarray), f"Expected np.ndarray for W_v, got {type(W_v)} with value {W_v}"
-    assert isinstance(D, (int, float)), f"Expected int or float for D, got {type(D)} with value {D}"
-    assert isinstance(learning_rate, (int, float)), f"Expected int or float for learning_rate, got {type(learning_rate)} with value {learning_rate}"
-    assert isinstance(bias, (int, float)), f"Expected int or float for bias, got {type(bias)} with value {bias}"
     
     sim = sigmoid(np.dot(W_u, W_v) - bias)
     gradient = (D - sim) * learning_rate
