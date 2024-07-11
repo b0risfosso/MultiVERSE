@@ -93,9 +93,30 @@ def main(args=None):
     print('Preprocessing done')
     G_hetereogeneous_traintest_split = EvalSplit()
     G_hetereogeneous_traintest_split.compute_splits(G_hetereogeneous, split_alg=split_alg, train_frac=train_frac, owa=False)
-    nee = LPEvaluator(G_hetereogeneous_traintest_split, dim=EMBED_DIMENSION, lp_model=lp_model)
-    G_heterogeneous_split = (G_hetereogeneous_traintest_split.TG)
-    os.replace('bipartite_2colformat.csv', './Generated_graphs/'+ 'bipartite_2colformat.csv')
+
+    # Step 1: Modify the train and test edges by decreasing each index by one
+    train_edges_modified = [[edge[0] - 1, edge[1] - 1] for edge in G_hetereogeneous_traintest_split.train_edges]
+    test_edges_modified = [[edge[0] - 1, edge[1] - 1] for edge in G_hetereogeneous_traintest_split.test_edges]
+
+    # Step 2: Create a new EvalSplit instance with modified edges
+    # Note: This step assumes EvalSplit can be initialized with train_edges and test_edges directly.
+    # If EvalSplit does not support direct initialization with edges, this step will need to be adapted.
+    modified_traintest_split = EvalSplit()
+    modified_traintest_split.train_edges = np.array(train_edges_modified)
+    modified_traintest_split.test_edges = np.array(test_edges_modified)
+
+    nee = LPEvaluator(modified_traintest_split, dim=EMBED_DIMENSION, lp_model=lp_model)
+    
+
+    # Print the modified train/test split to verify changes
+    print("Modified train/test split")
+    print("Train edges:", nee.traintest_split.train_edges)
+    print("Test edges:", nee.traintest_split.test_edges)
+    print("Done printing modified train/test split")
+
+    # Extract the modified train graph
+    G_heterogeneous_split = (modified_traintest_split.TG)
+    os.replace('bipartite_2colformat.csv', './Generated_graphs/' + 'bipartite_2colformat.csv')
     print('Splitting done')
 
     # Write the bipartite training graph for multiverse in extended edgelist format 'layer n1 n2 weight'
@@ -203,20 +224,6 @@ def main(args=None):
 
     edge_emb = ['hadamard', 'weighted_l1', 'weighted_l2', 'average', 'cosine']
     results_embeddings_methods = dict()
-    print("Printing X")
-    print(X)
-    print("Done printing X, stupid")
-
-    print("printing train/test split")
-    nee.traintest_split.train_edges -= 1
-    print(nee.traintest_split.train_edges)
-    print("done printing train/test split")
-
-    # Adjust test edges
-    print("printing train/test split")
-    nee.traintest_split.test_edges -= 1
-    print(nee.traintest_split.test_edges)
-    print("done printing train/test split")
 
     for i in range (len(edge_emb)):
         tmp_result_multiverse = nee.evaluate_ne(data_split=nee.traintest_split, X=X, method="Multiverse", edge_embed_method=edge_emb[i], label_binarizer=lp_model)
