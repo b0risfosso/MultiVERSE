@@ -64,8 +64,6 @@ def process_step(k, nodes, list_neighbours, CLOSEST_NODES, reverse_data_Distance
                 v_neg_idx = np.random.randint(0, nb_nodes)
             v_neg = list_neighbours[u, v_neg_idx]
             embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
-    if k % (NUM_STEPS // 10) == 0:
-        print(f"Progress step: {k} / {NUM_STEPS}")
     return embeddings
 
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
