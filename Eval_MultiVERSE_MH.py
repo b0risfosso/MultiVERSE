@@ -208,7 +208,10 @@ def main(args=None):
     print("Done printing X, stupid")
 
     print("printing train/test split")
-    print(nee.traintest_split)
+    print(nee.traintest_split.train_edges)
+    print("done printing train/test split")
+    print("printing train/test split")
+    print(nee.traintest_split.test_edges)
     print("done printing train/test split")
 
     for i in range (len(edge_emb)):
