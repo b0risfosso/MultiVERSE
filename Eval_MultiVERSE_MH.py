@@ -94,28 +94,10 @@ def main(args=None):
     G_hetereogeneous_traintest_split = EvalSplit()
     G_hetereogeneous_traintest_split.compute_splits(G_hetereogeneous, split_alg=split_alg, train_frac=train_frac, owa=False)
 
-    # Step 1: Modify the train and test edges by decreasing each index by one
-    train_edges_modified = [[edge[0] - 1, edge[1] - 1] for edge in G_hetereogeneous_traintest_split.train_edges]
-    test_edges_modified = [[edge[0] - 1, edge[1] - 1] for edge in G_hetereogeneous_traintest_split.test_edges]
-
-    # Step 2: Create a new EvalSplit instance with modified edges
-    # Note: This step assumes EvalSplit can be initialized with train_edges and test_edges directly.
-    # If EvalSplit does not support direct initialization with edges, this step will need to be adapted.
-    modified_traintest_split = EvalSplit()
-    modified_traintest_split.train_edges = np.array(train_edges_modified)
-    modified_traintest_split.test_edges = np.array(test_edges_modified)
-
-    nee = LPEvaluator(modified_traintest_split, dim=EMBED_DIMENSION, lp_model=lp_model)
-    
-
-    # Print the modified train/test split to verify changes
-    print("Modified train/test split")
-    print("Train edges:", nee.traintest_split.train_edges)
-    print("Test edges:", nee.traintest_split.test_edges)
-    print("Done printing modified train/test split")
+    nee = LPEvaluator(G_hetereogeneous_traintest_split, dim=EMBED_DIMENSION, lp_model=lp_model)
 
     # Extract the modified train graph
-    G_heterogeneous_split = (modified_traintest_split.TG)
+    G_heterogeneous_split = (G_hetereogeneous_traintest_split.TG)
     os.replace('bipartite_2colformat.csv', './Generated_graphs/' + 'bipartite_2colformat.csv')
     print('Splitting done')
 
@@ -200,8 +182,20 @@ def main(args=None):
                          CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI)
 
 
-    X = dict(zip(range(embeddings.shape[0]), embeddings))
-    X = {str(int(nodes[key])): X[key] for key in X}
+    # Increment the indices by 1 for the embeddings
+    X = dict(zip(range(1, embeddings.shape[0] + 1), embeddings))
+    X = {str(int(nodes[key - 1])): X[key] for key in X}
+
+    # Print the modified train/test split to verify changes
+    print("Modified train/test split")
+    print("Train edges:", nee.traintest_split.train_edges)
+    print("Test edges:", nee.traintest_split.test_edges)
+    print("Done printing modified train/test split")
+
+    print("Print X:")
+    print(X)
+    print("Done Print X:")
+
 
     # Convert nodes to numpy array if not already
     nodes = np.asarray(nodes)
