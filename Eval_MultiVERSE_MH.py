@@ -189,7 +189,7 @@ def main(args=None):
     X = {str(int(nodes[key-1])): X[key] for key in X}
 
     X2 = dict(zip(range(1, embeddings.shape[0] + 1), embeddings))
-    X2 = {str(int(nodes[key - 1])): X[key] for key in X}
+    X2 = {str(int(nodes[key - 1])): X2[key] for key in X2}
 
     print(X)
     print(X2)
