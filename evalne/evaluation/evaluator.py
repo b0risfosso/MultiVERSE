@@ -684,7 +684,7 @@ class LPEvaluator(object):
             func = getattr(edge_embeddings, str(edge_embed_method))
         except AttributeError:
             raise AttributeError('Edge embedding method `{}` is not a valid option.'.format(edge_embed_method))
-
+        print(X)
         tr_edge_embeds = func(X, data_split.train_edges)
         if len(data_split.test_edges) != 0:
             te_edge_embeds = func(X, data_split.test_edges)
