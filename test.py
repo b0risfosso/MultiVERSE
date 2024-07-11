@@ -100,6 +100,21 @@ def main(args=None):
     # Train and test during training
     neighborhood = np.asarray(neighborhood)
     nodes= np.asarray(nodes)
+
+    print("Data types of the parameters before calling train function:")
+    print(f"neighborhood: {type(neighborhood)}")
+    print(f"nodes: {type(nodes)}")
+    print(f"list_neighbours: {type(list_neighbours)}")
+    print(f"NUM_STEPS_1: {type(NUM_STEPS_1)}")
+    print(f"NUM_SAMPLED: {type(NUM_SAMPLED)}")
+    print(f"LEARNING_RATE: {type(LEARNING_RATE)}")
+    print(f"CLOSEST_NODES: {type(CLOSEST_NODES)}")
+    print(f"CHUNK_SIZE: {type(CHUNK_SIZE)}")
+    print(f"NB_CHUNK: {type(NB_CHUNK)}")
+    print(f"embeddings: {type(embeddings)}")
+    print(f"reverse_data_DistancematrixPPI: {type(reverse_data_DistancematrixPPI)}")
+
+
     
     embeddings = f.train(neighborhood, nodes, list_neighbours, NUM_STEPS_1, NUM_SAMPLED, LEARNING_RATE, \
                          CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI)
