@@ -15,9 +15,6 @@ from sklearn.preprocessing import normalize
 import pandas as pd
 import networkx as nx
 from evalne.utils import preprocess as pp
-from joblib import Parallel, delayed
-import numpy as np
-from tqdm import tqdm
 
 @njit
 def rand_choice_nb(arr, prob):
