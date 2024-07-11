@@ -55,6 +55,9 @@
 ## We clean the workspace
 rm(list=ls());cat('\014');if(length(dev.list()>0)){dev.off()}
 
+install.packages("unix") 
+library(unix)
+rlimit_as(1e12) 
 options(vsize = 64000)
 
 setwd("./RWR/")

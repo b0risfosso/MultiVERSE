@@ -126,16 +126,12 @@ def main(args=None):
     r_readRDS = robjects.r['readRDS']
     
     print('RWR-MH')
-    #proc = subprocess.Popen(['Rscript',  './RWR/GenerateSimMatrix_MH.R', \
-    #          '-n', '.' + args.n,  \
-    #          '-m', '.' + args.m,  \
-    #          '-b', '../Generated_graphs/'+ 'bipartite_training_graph_'  + '_'+ graph_name+'.txt', 
-    #          '-o', '../ResultsRWR/MatrixSimilarityMultiplexHet'+graph_name, '-c', str(cpu_number)])
-    proc = subprocess.Popen(['Rscript',  './GSM_MH_test.R', \
+    proc = subprocess.Popen(['Rscript',  './RWR/GenerateSimMatrix_MH.R', \
               '-n', '.' + args.n,  \
               '-m', '.' + args.m,  \
               '-b', '../Generated_graphs/'+ 'bipartite_training_graph_'  + '_'+ graph_name+'.txt', 
               '-o', '../ResultsRWR/MatrixSimilarityMultiplexHet'+graph_name, '-c', str(cpu_number)])
+
     proc.wait() 
     proc.kill()
     print('RWR done')
@@ -176,11 +172,11 @@ def main(args=None):
     nodes = np.asarray(nodes)
 
     # Check for missing nodes
-    missing_nodes = [str(sswwwnode) for node in nodes if str(node) not in X]
+    missing_nodes = [str(node) for node in nodes if str(node) not in X]
     if missing_nodes:
         print(f"Missing embeddings for nodes: {missing_nodes}")
     else:
-        print("No missing nodes")
+        print("No missing node.")
         
     np.save('embeddings_MH', X)
     date = datetime.datetime.now()
