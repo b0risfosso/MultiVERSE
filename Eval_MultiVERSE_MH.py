@@ -208,9 +208,13 @@ def main(args=None):
     print("Done printing X, stupid")
 
     print("printing train/test split")
+    nee.traintest_split.train_edges -= 1
     print(nee.traintest_split.train_edges)
     print("done printing train/test split")
+
+    # Adjust test edges
     print("printing train/test split")
+    nee.traintest_split.test_edges -= 1
     print(nee.traintest_split.test_edges)
     print("done printing train/test split")
 
