@@ -16,7 +16,7 @@ import pandas as pd
 import networkx as nx
 from evalne.utils import preprocess as pp
 
-@njit
+
 def rand_choice_nb(arr, prob):
     """
     :param arr: A 1D numpy array of values to sample from.
@@ -25,7 +25,7 @@ def rand_choice_nb(arr, prob):
     """
     return arr[np.searchsorted(np.cumsum(prob), np.random.random(), side="right")]
 
-@njit
+
 def node_positive_weighted (u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI):
     if np.sum(reverse_data_DistancematrixPPI[u])==0:
         return int(list_neighbours[u][np.random.randint(1,CLOSEST_NODES)])
@@ -34,14 +34,14 @@ def node_positive_weighted (u, list_neighbours, CLOSEST_NODES, reverse_data_Dist
        draw = rand_choice_nb(list_neighbours[u,0:CLOSEST_NODES], probas)
        return int(draw)
             
-@njit
+
 def sigmoid(x): 
     return 1 / (1 + math.exp(-x))
 
 def node_negative (u, list_neighbours, CLOSEST_NODES): 
     return int(list_neighbours[u][np.random.randint(np.size(list_neighbours[0])-CLOSEST_NODES,np.size(list_neighbours[0]))])
 
-@njit 
+
 def update(W_u, W_v, D, learning_rate, bias):
     
     sim = sigmoid(np.dot(W_u, W_v) - bias)
@@ -50,7 +50,7 @@ def update(W_u, W_v, D, learning_rate, bias):
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
 
-@njit
+
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
     nb_nodes = np.int64(np.shape(nodes)[0])
     # NCE biases
