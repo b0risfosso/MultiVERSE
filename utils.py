@@ -51,27 +51,39 @@ def update (W_u, W_v, D, learning_rate, bias):
 
 @njit(parallel=True)
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
+    print("run 1")
     nb_nodes = np.int64(np.shape(nodes)[0])
     # NCE biases
+    print("run 2")
     nce_bias = np.float64(np.log(nb_nodes))
+    print("run 3")
     nce_bias_neg = np.float64(np.log(nb_nodes / NUM_SAMPLED))
-          
+    print("run 4")
     for k in prange(NUM_STEPS):
+        print("run 5")
         nodes_opt = np.random.randint(0, nb_nodes, CHUNK_SIZE)
-        
+        print("run 6")
         for i in prange(CHUNK_SIZE):
+            print("run 7")
             u = nodes_opt[i]
+            print("run 8")
             v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
+            print("run 9")
             embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
-
+            print("run 10")
             for j in range(NUM_SAMPLED):
+                print("run 11")
                 if nb_nodes - CLOSEST_NODES - 1 > 0:
+                    print("run 12")
                     v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
                 else:
+                    print("run 13")
                     v_neg_idx = np.random.randint(0, nb_nodes)
+                print("run 14")
                 v_neg = list_neighbours[u, v_neg_idx]
+                print("run 15")
                 embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
-
+    print("run 16")
     return embeddings
 
 def knbrs(G, start, k):
