@@ -93,7 +93,7 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
                 embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
         
         if k % (NUM_STEPS // 10) == 0:
-            print(f"Progress: {k}/{NUM_STEPS} steps completed")
+            print("Progress: {}/{} steps completed".format(k, NUM_STEPS))
 
     return embeddings
 
