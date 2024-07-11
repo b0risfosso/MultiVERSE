@@ -64,6 +64,7 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
     for k in range(NUM_STEPS):
         nodes_opt = np.random.randint(0, nb_nodes, CHUNK_SIZE)
         for i in range(CHUNK_SIZE):
+            print(f"i: {i}")
             u = nodes_opt[i]
             v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
             try:
@@ -72,6 +73,7 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
                 print(f"AssertionError at step {k}, chunk {i}: {e}")
                 return embeddings
             for j in range(NUM_SAMPLED):
+                print(f"j: {j}")
                 if nb_nodes - CLOSEST_NODES - 1 > 0:
                     v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
                 else:
@@ -82,7 +84,7 @@ def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING
                 except AssertionError as e:
                     print(f"AssertionError at step {k}, chunk {i}, sample {j}: {e}")
                     return embeddings
-        if k % (NUM_STEPS // 10) == 0:
+        if k:
             print(f"Progress step: {k} / {NUM_STEPS}")
         
     print("Finish train")
