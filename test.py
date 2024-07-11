@@ -101,6 +101,8 @@ def main(args=None):
     neighborhood = np.asarray(neighborhood)
     nodes= np.asarray(nodes)
 
+    LEARNING_RATE = float(LEARNING_RATE)
+
     print("Data types of the parameters before calling train function:")
     print(f"neighborhood: {type(neighborhood)}")
     print(f"nodes: {type(nodes)}")
