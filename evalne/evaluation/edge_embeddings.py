@@ -80,14 +80,13 @@ def hadamard(X, ebunch):
     embedding_size = len(X[next(iter(X))])
     edge_embeds = np.zeros((len(ebunch), embedding_size))
 
-    print(len(X))
-    print(X)
-    print(ebunch)
 
     for i, (u, v) in enumerate(ebunch):
         try:
-            u_str = str(u)
-            v_str = str(v)
+            u1 = u - 1
+            v1 = v - 1
+            u_str = str(u1)
+            v_str = str(v1)
             if u_str not in X:
                 print(f"KeyError: Node {u_str} is missing from the embeddings dictionary.")
             if v_str not in X:
