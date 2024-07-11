@@ -26,23 +26,28 @@ def rand_choice_nb(arr, prob):
     return arr[np.searchsorted(np.cumsum(prob), np.random.random(), side="right")]
 
 @njit
-def node_positive_weighted (u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI):
-    if np.sum(reverse_data_DistancematrixPPI[u])==0:
-        return int(list_neighbours[u][np.random.randint(1,CLOSEST_NODES)])
+def node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI):
+    if np.sum(reverse_data_DistancematrixPPI[u]) == 0:
+        return int(list_neighbours[u][np.random.randint(1, CLOSEST_NODES)])
     else:
-       probas = reverse_data_DistancematrixPPI[u,0:CLOSEST_NODES]
-       draw = rand_choice_nb(list_neighbours[u,0:CLOSEST_NODES], probas)
-       return int(draw)
-            
+        probas = reverse_data_DistancematrixPPI[u, 0:CLOSEST_NODES]
+        draw = rand_choice_nb(list_neighbours[u, 0:CLOSEST_NODES], probas)
+        return int(draw)
+
 @njit
-def sigmoid(x): 
+def sigmoid(x):
     return 1 / (1 + math.exp(-x))
 
-def node_negative (u, list_neighbours, CLOSEST_NODES): 
-    return int(list_neighbours[u][np.random.randint(np.size(list_neighbours[0])-CLOSEST_NODES,np.size(list_neighbours[0]))])
+def node_negative(u, list_neighbours, CLOSEST_NODES):
+    return int(list_neighbours[u][np.random.randint(np.size(list_neighbours[0]) - CLOSEST_NODES, np.size(list_neighbours[0]))])
 
-@njit 
+@njit
 def update(W_u, W_v, D, learning_rate, bias):
+    assert isinstance(W_u, np.ndarray), f"Expected np.ndarray for W_u, got {type(W_u)} with value {W_u}"
+    assert isinstance(W_v, np.ndarray), f"Expected np.ndarray for W_v, got {type(W_v)} with value {W_v}"
+    assert isinstance(D, (np.int64, int)), f"Expected int or np.int64 for D, got {type(D)} with value {D}"
+    assert isinstance(learning_rate, (np.float64, float)), f"Expected float or np.float64 for learning_rate, got {type(learning_rate)} with value {learning_rate}"
+    assert isinstance(bias, (np.float64, float)), f"Expected float or np.float64 for bias, got {type(bias)} with value {bias}"
     
     sim = sigmoid(np.dot(W_u, W_v) - bias)
     gradient = (D - sim) * learning_rate
@@ -50,27 +55,37 @@ def update(W_u, W_v, D, learning_rate, bias):
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
 
-@njit(parallel=True)
+@njit
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
     nb_nodes = np.int64(np.shape(nodes)[0])
     # NCE biases
     nce_bias = np.float64(np.log(nb_nodes))
     nce_bias_neg = np.float64(np.log(nb_nodes / NUM_SAMPLED))
-    for k in prange(NUM_STEPS):
+    for k in range(NUM_STEPS):
         nodes_opt = np.random.randint(0, nb_nodes, CHUNK_SIZE)
-        for i in prange(CHUNK_SIZE):
+        for i in range(CHUNK_SIZE):
             u = nodes_opt[i]
             v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
-            embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
+            try:
+                embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
+            except AssertionError as e:
+                print(f"AssertionError at step {k}, chunk {i}: {e}")
+                return embeddings
             for j in range(NUM_SAMPLED):
                 if nb_nodes - CLOSEST_NODES - 1 > 0:
                     v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
                 else:
                     v_neg_idx = np.random.randint(0, nb_nodes)
                 v_neg = list_neighbours[u, v_neg_idx]
-                embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
+                try:
+                    embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
+                except AssertionError as e:
+                    print(f"AssertionError at step {k}, chunk {i}, sample {j}: {e}")
+                    return embeddings
+        if k % (NUM_STEPS // 10) == 0:
+            print(f"Progress step: {k} / {NUM_STEPS}")
         
-    print("finish train")
+    print("Finish train")
     return embeddings
 
 def knbrs(G, start, k):
