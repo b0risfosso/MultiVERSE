@@ -49,29 +49,6 @@ def update (W_u, W_v, D, learning_rate, bias):
     W_v = W_v + gradient * W_u
     return W_u, W_v, gradient
 
-
-def update(u_emb, v_emb, label, learning_rate, nce_bias):
-    # Dummy update function. Replace this with your actual update logic.
-    return u_emb, v_emb, None
-
-def node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI):
-    # Dummy function. Replace this with your actual node_positive_weighted logic.
-    return np.random.choice(list_neighbours[u])
-
-def process_chunk(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI, embeddings, nce_bias, nce_bias_neg, NUM_SAMPLED, LEARNING_RATE, nb_nodes):
-    v = node_positive_weighted(u, list_neighbours, CLOSEST_NODES, reverse_data_DistancematrixPPI)
-    embeddings[u, :], embeddings[v, :], gradientpos = update(embeddings[u, :], embeddings[v, :], 1, LEARNING_RATE, nce_bias)
-
-    for j in range(NUM_SAMPLED):
-        if nb_nodes - CLOSEST_NODES - 1 > 0:
-            v_neg_idx = np.random.randint(CLOSEST_NODES + 1, nb_nodes)
-        else:
-            v_neg_idx = np.random.randint(0, nb_nodes)
-        v_neg = list_neighbours[u, v_neg_idx]
-        embeddings[u, :], embeddings[v_neg, :], gradientneg = update(embeddings[u, :], embeddings[v_neg, :], 0, LEARNING_RATE, nce_bias_neg)
-
-    return embeddings[u, :]
-
 @njit(parallel=True)
 def train(neighborhood, nodes, list_neighbours, NUM_STEPS, NUM_SAMPLED, LEARNING_RATE, CLOSEST_NODES, CHUNK_SIZE, NB_CHUNK, embeddings, reverse_data_DistancematrixPPI):
     nb_nodes = np.int64(np.shape(nodes)[0])
